@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using ECommerce.Infrastructure;
 using ECommerce.Application;
+using ECommerce.API.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,10 @@ builder.InitLogger();
 var app = builder.Build();
 
 app.UseExceptionHandler(_ => { });
+
+app.UseMiddleware<SwaggerAuthMiddleware>();
+
+app.UseMiddleware<ApiLoggingMiddleware>();
 
 app.UseSwagger();
 
