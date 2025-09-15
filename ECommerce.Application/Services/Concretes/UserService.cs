@@ -206,43 +206,7 @@ namespace ECommerce.Application.Services.Concretes
             return true;
         }
        
-        private EmployeServiceParamtersDto GetEmployeeServiceParameters()
-        {
-            return new EmployeServiceParamtersDto
-            {
-                SearchApiBaseUrl = configuration["EmployeeAPISettings:SearchApiBaseUrl"],
-                BoomiClientSecret = configuration["EmployeeAPISettings:Boomi-ClientSecret"],
-                BoomiClientId = configuration["EmployeeAPISettings:Boomi-ClientId"],
-                BoomiApiKey = configuration["EmployeeAPISettings:Boomi-ApiKey"],
-                BoomiUrl = configuration["EmployeeAPISettings:Boomi-Url"]
-            };
-        }
-        private async Task<List<PersonnelDto>> FetchEmployeesFromApi(EmployeServiceParamtersDto serviceParams, List<string> tokens, string search)
-        {
-            using (var client = new HttpClient { Timeout = TimeSpan.FromMinutes(5) })
-            {
-                client.BaseAddress = new Uri(serviceParams.SearchApiBaseUrl);
 
-                var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"/ws/rest/contacts/api/Employees/Search/{search}?fireFlag=Active");
-
-                requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokens[0]);
-                requestMessage.Headers.Add("X-API-KEY", tokens[1]);
-
-                var response = await client.SendAsync(requestMessage);
-                response.EnsureSuccessStatusCode();
-
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    string responseBody = await response.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<List<PersonnelDto>>(responseBody, new JsonSerializerSettings
-                    {
-                        NullValueHandling = NullValueHandling.Ignore
-                    }) ?? new List<PersonnelDto>();
-                }
-            }
-
-            return new List<PersonnelDto>();
-        }
         public async Task<Result<LoginResponseDto>> TestLogin(SsoLoginDto ssoLoginDto)
         {
             var userRepo = unitOfWork.GetRepository<User>();
