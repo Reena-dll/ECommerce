@@ -1,20 +1,35 @@
+using ECommerce.API;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Swashbuckle.AspNetCore.SwaggerUI;
+using ECommerce.Infrastructure;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.LoadDataAccess(builder.Configuration);
 
-builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.LoadWebApi();
+
+builder.InitLogger();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+app.UseExceptionHandler(_ => { });
 
-app.UseHttpsRedirection();
+app.UseSwagger();
+
+app.UseSwaggerUI(options =>
+{
+
+    options.SwaggerEndpoint($"/swagger/v1/swagger.json", "ECommerce API V1");
+    options.RoutePrefix = "swagger";
+    options.DocumentTitle = "ECommerce System API Documentation";
+    options.DocExpansion(DocExpansion.None);
+});
+
+
+app.UseCors("AllowAllOrigins");
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
