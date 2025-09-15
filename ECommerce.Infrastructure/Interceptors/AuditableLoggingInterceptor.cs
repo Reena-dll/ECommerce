@@ -27,9 +27,8 @@ public class AuditableLoggingInterceptor(IHttpContextAccessor httpContextAccesso
     private void LogChanges(DbContext? dbContext)
     {
         if (dbContext == null)
-        {
             return;
-        }
+        
 
         var logEntries = dbContext.ChangeTracker.Entries()
             .Where(p => p.Entity is BaseEntity && (p.State == EntityState.Added || p.State == EntityState.Modified || p.State == EntityState.Deleted))
@@ -43,17 +42,14 @@ public class AuditableLoggingInterceptor(IHttpContextAccessor httpContextAccesso
             }).ToList();
 
         if (logEntries.Count != 0)
-        {
             dbContext.Set<Log>().AddRange(logEntries);
-        }
+        
     }
 
     private void UpdateAuditableProperties(DbContext? dbContext)
     {
         if (dbContext == null)
-        {
             return;
-        }
 
         var userIdClaimValue = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 

@@ -10,7 +10,6 @@
         public string PersonnelNumber { get; set; }
         public bool IsActive { get; set; } = true;
         public string? Salt { get; set; }
-        public Guid? AgencyId { get; set; }
         public ICollection<Role> Roles { get; set; }
         public string FullName => $"{FirstName} {LastName}";
     }

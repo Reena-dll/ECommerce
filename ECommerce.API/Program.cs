@@ -2,10 +2,13 @@ using ECommerce.API;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using ECommerce.Infrastructure;
+using ECommerce.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.LoadDataAccess(builder.Configuration);
+
+builder.Services.LoadBusiness(builder.Configuration);
 
 builder.Services.LoadWebApi();
 

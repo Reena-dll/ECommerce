@@ -19,7 +19,6 @@ namespace ECommerce.Infrastructure.Context
         public DbSet<Role> Roles { get; set; }
         public DbSet<Log> Logs { get; set; }
         public DbSet<Permission> Permissions { get; set; }
-        public DbSet<FileLog> FileLogs { get; set; }
         public DbSet<ApiLog> ApiLogs { get; set; }
 
 
