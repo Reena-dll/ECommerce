@@ -87,10 +87,8 @@ public class ApiLoggingMiddleware
         var userId = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
         var userEmail = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
         var roles = string.Join(",", claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value));
-        var agencyId = claims.FirstOrDefault(c => c.Type == "AgencyId")?.Value;
-        var agencyName = claims.FirstOrDefault(c => c.Type == "AgencyName")?.Value;
 
-        return $"UserID: {userId}, Email: {userEmail}, Roles: {roles}, AgencyName: {agencyName}, AgencyId: {agencyId}";
+        return $"UserID: {userId}, Email: {userEmail}, Roles: {roles}";
     }
     private CustomUser GetCustomUserFromToken(string token)
     {
