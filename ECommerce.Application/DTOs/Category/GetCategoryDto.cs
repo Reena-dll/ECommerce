@@ -9,5 +9,5 @@ namespace ECommerce.Application.DTOs.Category;
 
 public class GetCategoryDto : BaseFilterDto
 {
-    public string Name { get; set; }
+    public string? Name { get; set; }
 }
