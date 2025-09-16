@@ -17,7 +17,6 @@ namespace ECommerce.Application.Services.Abstracts
         Task<Result<UserDto>> GetByIdAsync(Guid Id);
         Task<Result<LoginResponseDto>> LoginAsync(LoginDto login);
         Task<bool> ValidateSwaggerCredentialsAsync(string email, string password);
-        Task<Result<LoginResponseDto>> TestLogin(SsoLoginDto ssoLoginDto);
         Task<Result> AddAsync(AddUserDto user);
         Task<Result> UpdateAsync(UpdateUserDto updatedUser);
         Task<Result> DeleteAsync(DeleteDto deleteDto);

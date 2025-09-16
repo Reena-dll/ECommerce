@@ -206,33 +206,6 @@ namespace ECommerce.Application.Services.Concretes
             return true;
         }
        
-
-        public async Task<Result<LoginResponseDto>> TestLogin(SsoLoginDto ssoLoginDto)
-        {
-            var userRepo = unitOfWork.GetRepository<User>();
-            var user = await userRepo.GetAsync(
-                predicate: u => u.Email.Trim() == ssoLoginDto.Code.Trim(),
-                include: p => p.Include(x => x.Roles.Where(r => !r.IsDeleted)).ThenInclude(t => t.Permissions),
-                enableTracking: false
-            );
-
-            if (user == null) return Error.UserNotExist;
-
-            var token = authService.GenerateJwtToken(user);
-
-            var response = new LoginResponseDto()
-            {
-                FullName = user.FullName,
-                Email = user.Email,
-                UserName = user.Username,
-                Token = token.Token,
-                ExpireTime = token.ExpireTime,
-                RightList = user.Roles.SelectMany(p => p.Permissions).Select(p => p.Name).OrderByDescending(p => p).ToList(),
-                Roles = user.Roles.Select(p => p.RoleName).ToList(),
-            };
-
-            return Result<LoginResponseDto>.Success(response);
-        }
         public async Task<Result> UpdateAsync(UpdateUserDto updatedUser)
         {
             var userRepo = unitOfWork.GetRepository<User>();

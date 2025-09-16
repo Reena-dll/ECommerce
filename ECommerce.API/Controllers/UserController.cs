@@ -50,14 +50,6 @@ public class UserController(IUserService userService) : BaseController
         return Ok(result);
     }
 
-    [HttpPost("TestLogin")]
-    [AllowAnonymous]
-    public async Task<IActionResult> TestLogin([FromBody] SsoLoginDto ssoLoginDto)
-    {
-        var result = await userService.TestLogin(ssoLoginDto);
-        return Ok(result);
-    }
-
     [HttpPost("Update")]
     [Permission("DataDefinition.UserDefinition.Edit")]
 
