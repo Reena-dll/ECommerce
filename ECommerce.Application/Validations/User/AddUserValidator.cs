@@ -37,13 +37,13 @@ public class AddUserValidator : AbstractValidator<AddUserDto>
             .Cascade(CascadeMode.Stop)
             .Must(p => string.IsNullOrEmpty(p) || p.Length >= 8)
                 .WithMessage("Password must be at least 8 characters long.")
-            .Matches(@"[A-Z]").When(p => !string.IsNullOrEmpty(p))
+            .Matches(@"[A-Z]").When(x => !string.IsNullOrEmpty(x.Password))
                 .WithMessage("Password must contain at least one uppercase letter.")
-            .Matches(@"[a-z]").When(p => !string.IsNullOrEmpty(p))
+            .Matches(@"[a-z]").When(x => !string.IsNullOrEmpty(x.Password))
                 .WithMessage("Password must contain at least one lowercase letter.")
-            .Matches(@"\d").When(p => !string.IsNullOrEmpty(p))
+            .Matches(@"\d").When(x => !string.IsNullOrEmpty(x.Password))
                 .WithMessage("Password must contain at least one digit.")
-            .Matches(@"[\W_]").When(p => !string.IsNullOrEmpty(p))
+            .Matches(@"[\W_]").When(x => !string.IsNullOrEmpty(x.Password))
                 .WithMessage("Password must contain at least one special character.");
 
         // Email
