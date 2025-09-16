@@ -47,6 +47,5 @@ Once you're done with the implementation, please ensure that:
 - All the requirements are met.
 - Commit history is clear and informative.
 
-If you have any questions in mind, don't hesitate to ask!  tm@tgworkshop.com
-
 Good luck!
+
