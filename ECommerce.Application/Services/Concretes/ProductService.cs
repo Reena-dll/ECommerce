@@ -1,8 +1,6 @@
 ﻿using ECommerce.Application.Core.Results;
 using ECommerce.Application.DTOs.Common;
-using ECommerce.Application.DTOs.Permission;
 using ECommerce.Application.DTOs.Product;
-using ECommerce.Application.DTOs.User;
 using ECommerce.Application.Services.Abstracts;
 using ECommerce.Domain.Entities;
 using ECommerce.Infrastructure.UnitOfWorks;
