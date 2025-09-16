@@ -45,5 +45,12 @@ public class GetProductValidator : AbstractValidator<GetProductDto>
         RuleFor(x => x.CategoryIds)
             .Must(list => list == null || list.Count > 0)
             .WithMessage("At least one CategoryId must be provided.");
+
+        // BaseFilterDto controls 
+        RuleFor(x => x.PageNumber)
+            .GreaterThanOrEqualTo(1).WithMessage("Page number must be at least 1.");
+
+        RuleFor(x => x.PageSize)
+            .InclusiveBetween(1, 100).WithMessage("Page size must be between 1 and 100.");
     }
 }
