@@ -2,38 +2,104 @@
 using ECommerce.Application.DTOs.Category;
 using ECommerce.Application.DTOs.Common;
 using ECommerce.Application.Services.Abstracts;
+using ECommerce.Domain.Entities;
 using ECommerce.Infrastructure.UnitOfWorks;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Mapster;
+using System.Linq.Expressions;
+
 
 namespace ECommerce.Application.Services.Concretes;
 public class CategoryService(IUnitOfWork unitOfWork, IHelperService helperService) : ICategoryService
 {
-    public Task<Result> AddAsync(AddCategoryDto addCategoryDto)
+    public async Task<Result> AddAsync(AddCategoryDto addCategoryDto)
     {
-        throw new NotImplementedException();
+        var category = addCategoryDto.Adapt<Category>();
+        var categoryRepo = unitOfWork.GetRepository<Category>();
+        var checkSamePermisssion = categoryRepo.GetAllNoPaginationAsync(predicate: p => p.Name.Trim() == addCategoryDto.Name.Trim(), enableTracking: true);
+        if (checkSamePermisssion.Result.Count() > 0) return Error.HasSameProduct;
+        await categoryRepo.AddAsync(category);
+        await unitOfWork.SaveAsync();
+        return Result.Success();
     }
 
-    public Task<Result> DeleteAsync(DeleteDto deleteDto)
+    public async Task<Result> DeleteAsync(DeleteDto deleteDto)
     {
-        throw new NotImplementedException();
+        var categoryRepo = unitOfWork.GetRepository<Category>();
+        var productRepo = unitOfWork.GetRepository<Product>();
+
+        var category = await categoryRepo.GetAsync(p => p.Id == deleteDto.Id, enableTracking: true);
+        if (category == null) return Error.ProductNotExist;
+
+        bool hasActiveProducts = await productRepo.AnyAsync(x => x.CategoryId == deleteDto.Id && !x.IsDeleted);
+        if (hasActiveProducts)
+            return Error.CategoryHasProducts;
+
+        category.IsDeleted = true;
+        await unitOfWork.SaveAsync();
+        return Result.Success();
     }
 
-    public Task<Result<List<CategoryDto>>> GetAllAsync(GetCategoryDto getCategoryDto)
+    public async Task<Result<List<CategoryDto>>> GetAllAsync(GetCategoryDto getCategoryDto)
     {
-        throw new NotImplementedException();
+        var categoryRepo = unitOfWork.GetRepository<Category>();
+
+        var searchName = getCategoryDto.Name?.ToLower();
+
+        Expression<Func<Category, bool>> filter = x =>
+         (string.IsNullOrEmpty(searchName) || x.Name.ToLower().Contains(searchName));
+
+        var categories = await categoryRepo.GetAllAsync(
+            predicate: filter,
+            select: s => new CategoryDto()
+            {
+                Id = s.Id,
+                Name = s.Name,
+                CreateDate = s.CreateDate,
+                UpdateDate = s.UpdateDate,
+                CreatedById = s.CreatedBy,
+                UpdatedById = s.UpdatedBy,
+
+            },
+            orderBy: o => o.OrderByDescending(p => p.CreateDate),
+            pageSize: getCategoryDto.PageSize,
+            currentPage: getCategoryDto.PageNumber,
+            enableTracking: false
+        );
+
+        await helperService.FillAudit(categories);
+
+        var userCount = await categoryRepo.CountAsync(filter);
+
+        return Result<List<CategoryDto>>.Success(categories, userCount);
     }
 
-    public Task<Result<CategoryDto>> GetByIdAsync(Guid Id)
+    public async Task<Result<CategoryDto>> GetByIdAsync(Guid Id)
     {
-        throw new NotImplementedException();
+        var categoryRepo = unitOfWork.GetRepository<Category>();
+        var category = await categoryRepo.GetAsync(
+            select: p => new CategoryDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                CreatedById = p.CreatedBy,
+                UpdateDate = p.UpdateDate,
+                UpdatedById = p.UpdatedBy,
+            },
+            predicate: p => p.Id == Id,
+            enableTracking: false);
+
+        await helperService.FillAudit(category);
+
+        return Result<CategoryDto>.Success(category);
     }
 
-    public Task<Result> UpdateAsync(UpdateCategoryDto updateCategoryDto)
+    public async Task<Result> UpdateAsync(UpdateCategoryDto updateCategoryDto)
     {
-        throw new NotImplementedException();
+        var categoryRepo = unitOfWork.GetRepository<Category>();
+        var category = await categoryRepo.GetAsync(p => p.Id == updateCategoryDto.Id, enableTracking: true);
+        if (category == null) return Error.ProductNotExist;
+        category.Name = updateCategoryDto.Name;
+        await unitOfWork.SaveAsync();
+        return Result.Success();
     }
 }
